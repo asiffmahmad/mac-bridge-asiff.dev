@@ -27,7 +27,7 @@ export function Chat() {
   const [showSessions, setShowSessions] = useState(false);
   
   const bottomRef = useRef<HTMLDivElement>(null);
-  const { client } = useStompClient();
+  const { client, isConnected } = useStompClient();
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -59,7 +59,7 @@ export function Chat() {
 
   // Listen to WebSocket stream for the selected session
   useEffect(() => {
-    if (client && currentSessionId) {
+    if (client && isConnected && currentSessionId) {
       const subscription = client.subscribe(`/topic/antigravity/${currentSessionId}`, (message) => {
         const event = JSON.parse(message.body);
         

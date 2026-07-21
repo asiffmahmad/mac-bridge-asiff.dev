@@ -6,6 +6,7 @@ import { useConnectionStore } from '@/store/connection';
 
 export function useStompClient() {
   const [client, setClient] = useState<Client | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
   const token = useAuthStore(state => state.token);
   const bridgeUrl = useSettingsStore(state => state.bridgeUrl);
   const { setState, recordHeartbeat, incrementReconnectAttempts, resetReconnectAttempts } = useConnectionStore();
@@ -36,6 +37,7 @@ export function useStompClient() {
 
     stompClient.onConnect = function () {
       setState('connected');
+      setIsConnected(true);
       resetReconnectAttempts();
       recordHeartbeat();
     };
@@ -47,6 +49,7 @@ export function useStompClient() {
 
     stompClient.onWebSocketClose = () => {
       setState('reconnecting');
+      setIsConnected(false);
       incrementReconnectAttempts();
     };
     
@@ -58,9 +61,10 @@ export function useStompClient() {
 
     return () => {
       stompClient.deactivate();
+      setIsConnected(false);
       setState('disconnected');
     };
   }, [token, bridgeUrl, setState, recordHeartbeat, incrementReconnectAttempts, resetReconnectAttempts]);
 
-  return { client };
+  return { client, isConnected };
 }

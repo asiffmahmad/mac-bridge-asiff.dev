@@ -27,20 +27,20 @@ export function Terminal() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const { client } = useStompClient();
+  const { client, isConnected } = useStompClient();
 
   useEffect(() => {
     scrollToBottom();
   }, [history, isRunning]);
 
   useEffect(() => {
-    if (client) {
+    if (client && isConnected) {
       const subscription = client.subscribe(`/topic/terminal/${sessionId}`, (message) => {
         setHistory(prev => [...prev, { id: Date.now().toString() + Math.random(), text: message.body, type: 'output' }]);
       });
       return () => subscription.unsubscribe();
     }
-  }, [client, sessionId]);
+  }, [client, isConnected, sessionId]);
 
   const executeCommand = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
