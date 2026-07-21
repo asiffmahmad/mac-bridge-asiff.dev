@@ -122,7 +122,7 @@ public class AntigravityService {
             
             messagingTemplate.convertAndSend(topic, "{\"type\": \"start\"}");
             
-            char[] buffer = new char[1];
+            char[] buffer = new char[1024];
             int numRead;
             while ((numRead = reader.read(buffer)) != -1) {
                 String token = new String(buffer, 0, numRead);

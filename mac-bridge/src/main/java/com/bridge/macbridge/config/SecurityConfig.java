@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/tunnel/**").permitAll()
                 .requestMatchers("/api/pairing/generate", "/api/pairing/verify").permitAll()
                 .requestMatchers("/api/health").permitAll()
+                .requestMatchers("/api/antigravity/chat").permitAll()
                 .requestMatchers("/ws/**").permitAll() // WebSockets handle their own auth or are open for MVP
                 .anyRequest().authenticated()
             );

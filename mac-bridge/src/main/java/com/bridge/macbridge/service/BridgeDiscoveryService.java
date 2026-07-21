@@ -50,17 +50,16 @@ public class BridgeDiscoveryService {
                 }
             }
             if (bridgeId == null) {
-                // Generate a new 256-bit unique, unguessable ID
-                bridgeId = "mac-bridge-" + UUID.randomUUID().toString().replace("-", "")
-                         + UUID.randomUUID().toString().replace("-", "");
+                // Generate a new 256-bit unique, unguessable ID, but keep it under 64 chars for ntfy.sh
+                bridgeId = "mac-" + UUID.randomUUID().toString().replace("-", "");
                 Files.writeString(bridgeIdFile, bridgeId);
                 log.info("[Discovery] Generated new Bridge ID: {}", bridgeId);
             } else {
-                log.info("[Discovery] Loaded existing Bridge ID: {}", bridgeId.substring(0, 20) + "...");
+                log.info("[Discovery] Loaded existing Bridge ID: {}", bridgeId.substring(0, 10) + "...");
             }
         } catch (Exception e) {
             // Fallback in-memory ID
-            bridgeId = "mac-bridge-" + UUID.randomUUID().toString().replace("-", "");
+            bridgeId = "mac-" + UUID.randomUUID().toString().replace("-", "");
             log.error("[Discovery] Failed to persist bridge ID: {}", e.getMessage());
         }
     }
