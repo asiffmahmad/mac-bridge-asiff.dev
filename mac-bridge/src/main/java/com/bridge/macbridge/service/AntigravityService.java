@@ -111,21 +111,23 @@ public class AntigravityService {
         
         try {
             // Simulated execution with the python wrapper for MVP
-            ProcessBuilder pb = new ProcessBuilder("python3", pythonScriptPath, "chat", message);
+            String pythonBin = System.getProperty("user.dir") + "/venv/bin/python";
+            ProcessBuilder pb = new ProcessBuilder(pythonBin, pythonScriptPath, "chat", message);
             pb.redirectErrorStream(true);
             Process process = pb.start();
             activeProcesses.put(id, process);
             
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            InputStreamReader reader = new InputStreamReader(process.getInputStream());
             StringBuilder output = new StringBuilder();
-            String line;
             
             messagingTemplate.convertAndSend(topic, "{\"type\": \"start\"}");
             
-            while ((line = reader.readLine()) != null) {
-                output.append(line).append("\n");
-                // For MVP simulated streaming, we just stream lines. A real SDK would yield tokens.
-                messagingTemplate.convertAndSend(topic, "{\"type\": \"token\", \"content\": " + objectMapper.writeValueAsString(line + "\n") + "}");
+            char[] buffer = new char[1];
+            int numRead;
+            while ((numRead = reader.read(buffer)) != -1) {
+                String token = new String(buffer, 0, numRead);
+                output.append(token);
+                messagingTemplate.convertAndSend(topic, "{\"type\": \"token\", \"content\": " + objectMapper.writeValueAsString(token) + "}");
             }
             
             int exitCode = process.waitFor();
@@ -135,13 +137,7 @@ public class AntigravityService {
             if (exitCode != 0) {
                 finalResponse = "Error: Process exited with code " + exitCode + "\n" + output.toString();
             } else {
-                // Parse the rudimentary JSON mock
-                String jsonOutput = output.toString();
-                if (jsonOutput.contains("\"message\": \"")) {
-                    finalResponse = jsonOutput.substring(jsonOutput.indexOf("\"message\": \"") + 12, jsonOutput.lastIndexOf("\""));
-                } else {
-                    finalResponse = jsonOutput; // fallback
-                }
+                finalResponse = output.toString();
             }
             
             history.add(new ChatMessageDto("assistant", finalResponse));
