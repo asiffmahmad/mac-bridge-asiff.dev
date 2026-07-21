@@ -11,6 +11,7 @@
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/controller/PairingController.java
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/controller/SystemInfoController.java
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/controller/TerminalController.java
+/Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/controller/TunnelController.java
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/dto/AuthRequest.java
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/dto/AuthResponse.java
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/dto/ChatMessageDto.java
@@ -35,6 +36,8 @@
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/security/JwtUtil.java
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/security/RateLimitFilter.java
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/service/AntigravityService.java
+/Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/service/BridgeDiscoveryService.java
+/Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/service/CloudflaredService.java
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/service/FileService.java
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/service/GitService.java
 /Users/asiff/Documents/projects/PhoneBridge/mac-bridge/src/main/java/com/bridge/macbridge/service/PairingService.java

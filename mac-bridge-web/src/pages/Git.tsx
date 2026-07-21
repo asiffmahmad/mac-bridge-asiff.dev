@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/api/client';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { GitBranch, GitCommit, FileText, RefreshCw, Upload, Download, CheckCircle, AlertCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { GitBranch, GitCommit, RefreshCw, Upload, Download, CheckCircle, AlertCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface GitStatus {
   branch: string;

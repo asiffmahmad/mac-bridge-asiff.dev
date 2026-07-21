@@ -17,7 +17,7 @@ export function Terminal() {
   const [command, setCommand] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [cwd, setCwd] = useState('~');
-  const [sessionId, setSessionId] = useState<string>(() => Math.random().toString(36).substring(7));
+  const [sessionId] = useState<string>(() => Math.random().toString(36).substring(7));
   const [cmdHistory, setCmdHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   
@@ -68,7 +68,7 @@ export function Terminal() {
     setIsRunning(true);
 
     try {
-      const { data } = await apiClient.post('/api/terminal/run', { 
+      await apiClient.post('/api/terminal/run', { 
         command: cmd, 
         cwd: cwd === '~' ? '' : cwd,
         sessionId 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Monitor, Cpu, MemoryStick, HardDrive, Info, ListOrdered, ShieldAlert, CpuIcon, Hammer } from 'lucide-react';
+import { Monitor, Cpu, MemoryStick, HardDrive, Info, ShieldAlert, CpuIcon, Hammer } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const formatBytes = (bytes: number, decimals = 2) => {

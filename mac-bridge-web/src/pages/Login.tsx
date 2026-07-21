@@ -52,7 +52,8 @@ export function Login() {
       setError('');
       try {
         const { data } = await apiClient.post(`${localBridgeUrl}/api/auth/login`, { username, password });
-        login(data.token, data.refreshToken, data.hostname, data.version);
+        setBridgeUrl(localBridgeUrl);
+        login(data.token, data.refreshToken, data.hostname, data.version, data.bridgeId);
         navigate('/');
       } catch (err: any) {
         setError(err.response?.data || 'Authentication failed');

@@ -29,7 +29,7 @@ export function Pair() {
           code, 
           deviceName 
         });
-        pair(data.token, data.refreshToken, data.deviceId);
+        pair(data.token, data.refreshToken, data.deviceId, data.bridgeId);
         navigate('/');
       } catch (err: any) {
         setError(err.response?.data || 'Pairing failed. Check code and URL.');

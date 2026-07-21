@@ -29,7 +29,7 @@ export function useStompClient() {
       reconnectDelay: 5000,
       heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,
-      onChangeState: (state) => {
+      onChangeState: (_state) => {
         // We can hook into internal state changes if needed
       }
     });

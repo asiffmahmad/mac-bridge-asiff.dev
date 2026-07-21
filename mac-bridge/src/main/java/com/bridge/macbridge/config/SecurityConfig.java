@@ -43,6 +43,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
                 .requestMatchers("/api/bridge/info").permitAll()
+                .requestMatchers("/api/tunnel/**").permitAll()
                 .requestMatchers("/api/pairing/generate", "/api/pairing/verify").permitAll()
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/ws/**").permitAll() // WebSockets handle their own auth or are open for MVP

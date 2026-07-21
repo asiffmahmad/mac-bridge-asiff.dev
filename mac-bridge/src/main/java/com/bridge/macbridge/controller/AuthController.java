@@ -4,6 +4,7 @@ import com.bridge.macbridge.dto.AuthRequest;
 import com.bridge.macbridge.dto.AuthResponse;
 import com.bridge.macbridge.dto.RefreshRequest;
 import com.bridge.macbridge.security.JwtUtil;
+import com.bridge.macbridge.service.BridgeDiscoveryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -27,14 +28,17 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
-    
+    private final BridgeDiscoveryService discoveryService;
+
     @Value("${bridge.version:1.0.0}")
     private String version;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
+                          UserDetailsService userDetailsService, BridgeDiscoveryService discoveryService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.discoveryService = discoveryService;
     }
 
     @PostMapping("/login")
@@ -47,32 +51,32 @@ public class AuthController {
         String jwt = jwtUtil.generateToken(userDetails.getUsername(), authRequest.getDeviceId());
         String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername(), authRequest.getDeviceId());
 
-        return ResponseEntity.ok(new AuthResponse(jwt, refreshToken, getHostname(), version));
+        return ResponseEntity.ok(new AuthResponse(jwt, refreshToken, getHostname(), version, discoveryService.getBridgeId()));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@Valid @RequestBody RefreshRequest refreshRequest) {
         String refreshToken = refreshRequest.getRefreshToken();
-        
+
         try {
             if (!jwtUtil.isRefreshToken(refreshToken)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token type");
             }
-            
+
             String username = jwtUtil.extractUsername(refreshToken);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            
+
             if (jwtUtil.validateToken(refreshToken, userDetails)) {
                 String deviceId = jwtUtil.extractDeviceId(refreshToken);
                 String newJwt = jwtUtil.generateToken(username, deviceId);
                 String newRefreshToken = jwtUtil.generateRefreshToken(username, deviceId);
-                
-                return ResponseEntity.ok(new AuthResponse(newJwt, newRefreshToken, getHostname(), version));
+
+                return ResponseEntity.ok(new AuthResponse(newJwt, newRefreshToken, getHostname(), version, discoveryService.getBridgeId()));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
-        
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
     }
 

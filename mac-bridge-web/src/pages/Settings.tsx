@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/store/auth';
 import { useSettingsStore } from '@/store/settings';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useDiscoveryStore } from '@/store/discovery';
+import { apiClient } from '@/api/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { LogOut, Globe, Moon, Sun, Bell, Download, Upload, Laptop } from 'lucide-react';
+import { LogOut, Globe, Moon, Sun, Bell, Download, Upload, Laptop, Copy, RefreshCw, PlugZap, Wifi, WifiOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function Settings() {
   const logout = useAuthStore((state) => state.logout);
   const hostname = useAuthStore((state) => state.hostname);
   const version = useAuthStore((state) => state.version);
-  
+  const { bridgeId } = useDiscoveryStore();
+
   const { 
     bridgeUrl, setBridgeUrl, 
     tunnelUrl, setTunnelUrl,
@@ -25,6 +28,32 @@ export function Settings() {
 
   const [importStr, setImportStr] = useState('');
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [tunnelStatus, setTunnelStatus] = useState<any>(null);
+  const [restarting, setRestarting] = useState(false);
+
+  const fetchTunnelStatus = useCallback(async () => {
+    try {
+      const { data } = await apiClient.get('/api/tunnel/status');
+      setTunnelStatus(data);
+      if (data.tunnelUrl) setTunnelUrl(data.tunnelUrl);
+    } catch { /* bridge may be starting */ }
+  }, [setTunnelUrl]);
+
+  useEffect(() => {
+    fetchTunnelStatus();
+    const interval = setInterval(fetchTunnelStatus, 10_000);
+    return () => clearInterval(interval);
+  }, [fetchTunnelStatus]);
+
+  const handleRestartTunnel = async () => {
+    setRestarting(true);
+    try {
+      await apiClient.post('/api/tunnel/restart');
+      setTimeout(fetchTunnelStatus, 4000);
+    } finally {
+      setTimeout(() => setRestarting(false), 4000);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -72,6 +101,62 @@ export function Settings() {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Tunnel Status Card */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+        <Card className="glass-panel">
+          <CardHeader className="p-4 pb-2 border-b border-white/5">
+            <CardTitle className="text-sm font-medium flex items-center gap-2 text-cyan-400">
+              <PlugZap className="w-4 h-4" />
+              Tunnel Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-gray-400">Status</span>
+              <div className="flex items-center gap-1.5">
+                {tunnelStatus?.running
+                  ? <><Wifi className="w-3 h-3 text-green-400" /><span className="text-green-400 font-medium">Active</span></>
+                  : <><WifiOff className="w-3 h-3 text-red-400" /><span className="text-red-400 font-medium">Offline</span></>
+                }
+              </div>
+            </div>
+            <div className="space-y-1">
+              <span className="text-xs text-gray-400 uppercase tracking-wider">Current Tunnel URL</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-white font-mono break-all flex-1">
+                  {tunnelStatus?.tunnelUrl || tunnelUrl || 'Starting...'}
+                </span>
+                {(tunnelStatus?.tunnelUrl || tunnelUrl) && (
+                  <button
+                    onClick={() => navigator.clipboard.writeText(tunnelStatus?.tunnelUrl || tunnelUrl)}
+                    className="p-1 rounded-md hover:bg-white/10 text-gray-400 hover:text-white transition-colors flex-shrink-0"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            </div>
+            {bridgeId && (
+              <div className="space-y-1">
+                <span className="text-xs text-gray-400 uppercase tracking-wider">Bridge ID (Auto-Discovery)</span>
+                <p className="text-[10px] text-gray-500 font-mono break-all">{bridgeId.substring(0, 40)}...</p>
+              </div>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full bg-transparent border-white/15 text-cyan-300 hover:text-white hover:bg-white/10"
+              onClick={handleRestartTunnel}
+              disabled={restarting}
+            >
+              <RefreshCw className={`w-3.5 h-3.5 mr-2 ${restarting ? 'animate-spin' : ''}`} />
+              {restarting ? 'Restarting Tunnel...' : 'Restart Tunnel'}
+            </Button>
+          </CardContent>
+        </Card>
+      </motion.div>
+
 
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
         <Card className="glass-panel">

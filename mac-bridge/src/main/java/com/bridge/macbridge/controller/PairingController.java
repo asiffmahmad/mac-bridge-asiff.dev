@@ -4,6 +4,7 @@ import com.bridge.macbridge.dto.DeviceInfo;
 import com.bridge.macbridge.dto.PairingRequest;
 import com.bridge.macbridge.dto.PairingResponse;
 import com.bridge.macbridge.security.JwtUtil;
+import com.bridge.macbridge.service.BridgeDiscoveryService;
 import com.bridge.macbridge.service.PairingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,11 +24,15 @@ public class PairingController {
     private final PairingService pairingService;
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final BridgeDiscoveryService discoveryService;
 
-    public PairingController(PairingService pairingService, JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+    public PairingController(PairingService pairingService, JwtUtil jwtUtil,
+                             UserDetailsService userDetailsService,
+                             BridgeDiscoveryService discoveryService) {
         this.pairingService = pairingService;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.discoveryService = discoveryService;
     }
 
     /**
@@ -61,7 +66,7 @@ public class PairingController {
             String jwt = jwtUtil.generateToken(userDetails.getUsername(), device.getId());
             String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername(), device.getId());
             
-            return ResponseEntity.ok(new PairingResponse(jwt, refreshToken, device.getId()));
+            return ResponseEntity.ok(new PairingResponse(jwt, refreshToken, device.getId(), discoveryService.getBridgeId()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (IllegalStateException e) {

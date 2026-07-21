@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 
 import { 
   Folder, FileText, ChevronLeft, Upload, Plus, Download, 
-  ChevronRight, Search, MoreVertical, Trash, Edit2, Copy, Move
+  Search, MoreVertical, Trash, Edit2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

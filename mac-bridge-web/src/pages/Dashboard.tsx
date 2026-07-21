@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Activity, Cpu, HardDrive, MemoryStick, CheckCircle2, XCircle, Battery, BatteryCharging, Zap } from 'lucide-react';
+import { Cpu, HardDrive, MemoryStick, CheckCircle2, XCircle, Battery, BatteryCharging, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const formatBytes = (bytes: number, decimals = 2) => {
