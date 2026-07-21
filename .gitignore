@@ -1,0 +1,22 @@
+# Mac Bridge - macOS
+.DS_Store
+
+# Java / Maven
+mac-bridge/target/
+*.class
+*.jar
+
+# Node / Frontend
+mac-bridge-web/node_modules/
+mac-bridge-web/dist/
+mac-bridge-web/.vite/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.iml
